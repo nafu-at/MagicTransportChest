@@ -35,7 +35,7 @@ jobs:
     - name: Set up Spigot NMS
       uses: SpraxDev/Action-SpigotMC@v5
       with:
-        versions: latest
+        versions: '1.20'
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
