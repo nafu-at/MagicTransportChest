@@ -1,0 +1,12 @@
+name: MagicTransportChest
+version: '${version}'
+main: dev.nafusoft.magictransportchest.MagicTransportChest
+api-version: '1.20'
+authors: [ Nafu Satsuki ]
+description: This Spigot plugin can create chests where items are shared between servers.
+
+commands:
+  magictransportchest:
+    aliases: [ mtc ]
+    description: Main command for MagicTransportChest.
+    usage: /<command> <subcommand> [args]

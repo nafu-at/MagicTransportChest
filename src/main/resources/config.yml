@@ -1,0 +1,10 @@
+database: # Use the same database on the servers you wish to share.
+  jdbcUrl: jdbc:mysql://localhost:3306/magicchest # legend: jdbc:mysql://host:port/database or jdbc:mariadb://host:port/database
+  username: magicchest
+  password: MaGiCcHeSt
+  tablePrefix: mtc_
+
+redis: # Redis is used to store storage usage between each server.
+  host: localhost
+  port: 6379
+  database: 0 # Default is 0
