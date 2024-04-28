@@ -16,7 +16,14 @@
 
 package dev.nafusoft.magictransportchest.entities
 
-data class MagicStorage(val id: String, val name: String?, val owner: String, val type: StorageType, val size: Int) {
+data class MagicStorage(
+    val id: String,
+    val name: String?,
+    val owner: String,
+    val type: StorageType,
+    val size: Int,
+    val writeLimit: String?
+) {
 
     enum class StorageType {
         BLOCK,

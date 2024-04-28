@@ -51,8 +51,15 @@ class StorageService(
         chestLocationStore.getStorageByLocation(MagicChestLocation.fromMinecraftLocation(location))
             ?.let { inventoryStore.getInventory(it) }?.let { MagicInventory.fromString(it) }
 
-    fun setStorage(id: String, name: String?, owner: String, type: MagicStorage.StorageType, size: Int) =
-        storageStore.registerStorage(MagicStorage(id, name, owner, type, size))
+    fun setStorage(
+        id: String,
+        name: String?,
+        owner: String,
+        type: MagicStorage.StorageType,
+        size: Int,
+        writeLimit: String?
+    ) =
+        storageStore.registerStorage(MagicStorage(id, name, owner, type, size, writeLimit))
 
     fun setChestLocation(storageId: String, world: String, x: Double, y: Double, z: Double) =
         chestLocationStore.registerLocation(storageId, MagicChestLocation(world, x, y, z))
@@ -74,7 +81,7 @@ class StorageService(
         chestLocationStore.getStorageByLocation(MagicChestLocation(world, x, y, z))
             ?.let { chestLocationStore.deleteLocation(it) }
 
-    fun removeStorage(id: String) =
+    fun deleteStorage(id: String) =
         storageStore.deleteStorage(id) // Deleting storage will delete all elements with foreign key constraints.
 
     fun newInventory(storageId: String) =

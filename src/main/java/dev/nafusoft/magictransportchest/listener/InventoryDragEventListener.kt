@@ -16,6 +16,7 @@
 
 package dev.nafusoft.magictransportchest.listener
 
+import dev.nafusoft.magictransportchest.MagicTransportChest
 import dev.nafusoft.magictransportchest.entities.MagicInventoryHolder
 import dev.nafusoft.magictransportchest.utils.ItemFilterChecker
 import org.bukkit.event.EventHandler
@@ -26,12 +27,20 @@ class InventoryDragEventListener : Listener {
 
     @EventHandler
     fun onInventoryDrag(event: InventoryDragEvent) {
-        if (event.inventory.holder is MagicInventoryHolder) {
-            event.newItems.forEach { (_, item) ->
-                if (!ItemFilterChecker.check(item)) {
+        val holder = event.inventory.holder
+        if (holder is MagicInventoryHolder) {
+            // Check if the storage is limited to write
+            if (!holder.storage.writeLimit.isNullOrBlank() && holder.storage.writeLimit != MagicTransportChest.instance!!.pluginConfig.serverUniqueId) {
+                event.newItems.keys.find { it < holder.inventory.size }?.let {
                     event.isCancelled = true
                     return
                 }
+            }
+
+            // Check if the item is allowed to be stored
+            event.newItems.values.find { !ItemFilterChecker.check(it) }?.let {
+                event.isCancelled = true
+                return
             }
         }
     }

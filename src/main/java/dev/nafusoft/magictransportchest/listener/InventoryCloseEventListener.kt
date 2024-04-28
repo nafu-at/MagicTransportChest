@@ -16,6 +16,7 @@
 
 package dev.nafusoft.magictransportchest.listener
 
+import dev.nafusoft.magictransportchest.MagicTransportChest
 import dev.nafusoft.magictransportchest.command.ItemFilterSettingCommand
 import dev.nafusoft.magictransportchest.entities.MagicInventoryHolder
 import org.bukkit.event.EventHandler
@@ -35,7 +36,8 @@ class InventoryCloseEventListener(private val jedis: Jedis) : Listener {
             holder.saveInventory(event.inventory)
         } else if (holder is MagicInventoryHolder) {
             holder.saveInventory(event.inventory)
-            jedis.del("open:${holder.storageId}")
+            jedis.del("open:${holder.storage.id}")
+            MagicTransportChest.openedInventories.remove(holder)
         }
     }
 }

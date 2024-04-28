@@ -16,6 +16,7 @@
 
 package dev.nafusoft.magictransportchest.listener
 
+import dev.nafusoft.magictransportchest.MagicTransportChest
 import dev.nafusoft.magictransportchest.entities.MagicInventoryHolder
 import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
@@ -31,11 +32,13 @@ class InventoryOpenEventListener(private val jedis: Jedis) : Listener {
         val holder = inventory.holder
 
         if (holder is MagicInventoryHolder) {
-            if (jedis.exists("open:${holder.storageId}")) {
+            // Check if the chest is already opened by another server
+            if (jedis.exists("open:${holder.storage.id}")) {
                 event.player.sendMessage("${ChatColor.RED}${ChatColor.BOLD}This chest is already opened by another player. Please wait a moment.")
                 event.isCancelled = true
             }
-            jedis.set("open:${holder.storageId}", System.currentTimeMillis().toString())
+            jedis["open:${holder.storage.id}"] = System.currentTimeMillis().toString()
+            MagicTransportChest.openedInventories.add(holder)
         }
     }
 }

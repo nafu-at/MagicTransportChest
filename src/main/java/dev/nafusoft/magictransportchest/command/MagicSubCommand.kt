@@ -25,4 +25,8 @@ fun interface MagicSubCommand {
     fun onTabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         return emptyList()
     }
+
+    fun getPermission(): String? {
+        return null
+    }
 }

@@ -4,11 +4,9 @@ import dev.nafusoft.magictransportchest.MagicTransportChestConfig.ConfigLoader
 import dev.nafusoft.magictransportchest.command.*
 import dev.nafusoft.magictransportchest.database.*
 import dev.nafusoft.magictransportchest.entities.MagicInventory
+import dev.nafusoft.magictransportchest.entities.MagicInventoryHolder
 import dev.nafusoft.magictransportchest.entities.MagicItemStack
-import dev.nafusoft.magictransportchest.listener.InventoryCloseEventListener
-import dev.nafusoft.magictransportchest.listener.InventoryDragEventListener
-import dev.nafusoft.magictransportchest.listener.InventoryMoveItemEventListener
-import dev.nafusoft.magictransportchest.listener.InventoryOpenEventListener
+import dev.nafusoft.magictransportchest.listener.*
 import dev.nafusoft.magictransportchest.service.StorageService
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -18,7 +16,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import redis.clients.jedis.JedisPool
-import java.util.*
 
 
 class MagicTransportChest : JavaPlugin() {
@@ -87,6 +84,10 @@ class MagicTransportChest : JavaPlugin() {
             } else {
                 val subCommand = subCommands[args[0]]
                 if (subCommand != null) {
+                    if (subCommand.getPermission() != null && !sender.hasPermission(subCommand.getPermission()!!)) {
+                        sender.sendMessage("${ChatColor.RED}${ChatColor.BOLD}[MagicTransportChest] You don't have permission to use this command.")
+                        return true
+                    }
                     return subCommand.onCommand(sender, args.copyOfRange(1, args.size))
                 }
             }
@@ -113,11 +114,14 @@ class MagicTransportChest : JavaPlugin() {
         subCommands["settings"] = SettingsCommand(settingsStore!!)
         subCommands["filter"] = ItemFilterSettingCommand(settingsStore!!)
         subCommands["create"] = CreateStorageCommand(storageService, settingsStore!!)
+        subCommands["delete"] = DeleteStorageCommand(storageService)
         subCommands["open"] = OpenStorageCommand(storageService, settingsStore!!)
         server.pluginManager.registerEvents(InventoryOpenEventListener(jedis), this)
         server.pluginManager.registerEvents(InventoryCloseEventListener(jedis), this)
         server.pluginManager.registerEvents(InventoryDragEventListener(), this)
         server.pluginManager.registerEvents(InventoryMoveItemEventListener(), this)
+        if (pluginConfig.storage.createDefault)
+            server.pluginManager.registerEvents(PlayerJoinEventListener(settingsStore!!, storageStore!!), this)
 
         ConfigurationSerialization.registerClass(MagicInventory::class.java)
         ConfigurationSerialization.registerClass(MagicItemStack::class.java)
@@ -131,7 +135,7 @@ class MagicTransportChest : JavaPlugin() {
     ): MutableList<String>? {
         if (command.name.equals("magictransportchest", ignoreCase = true) && args != null && args.size == 1) {
             return subCommands.keys.filter { it.startsWith(args[0]) }.toMutableList()
-        } else if (args != null && args.size > 0) {
+        } else if (args != null && args.isNotEmpty()) {
             val subCommand = subCommands[args[0]]
             if (subCommand != null)
                 return subCommand.onTabComplete(sender, args.copyOfRange(1, args.size)).toMutableList()
@@ -140,6 +144,9 @@ class MagicTransportChest : JavaPlugin() {
     }
 
     private fun shutdown() {
+        openedInventories.forEach { it.player.closeInventory() }
+        openedInventories.clear()
+
         subCommands.clear()
 
         server.scheduler.cancelTasks(this)
@@ -167,12 +174,7 @@ class MagicTransportChest : JavaPlugin() {
             }
             private set
 
-        var serverSpecificName: String? = null
-            get() {
-                if (field == null)
-                    field = UUID.randomUUID().toString()
-                return field
-            }
+        var openedInventories = arrayListOf<MagicInventoryHolder>()
             private set
     }
 }

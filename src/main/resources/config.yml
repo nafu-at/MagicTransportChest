@@ -8,3 +8,9 @@ redis: # Redis is used to store storage usage between each server.
   host: localhost
   port: 6379
   database: 0 # Default is 0
+
+storage:
+  createDefault: false # If true, the plugin will create a default storage for each player when they join the server.
+
+
+serverUniqueId: '' # This setting is generated the first time the plugin is launched and should not be changed.

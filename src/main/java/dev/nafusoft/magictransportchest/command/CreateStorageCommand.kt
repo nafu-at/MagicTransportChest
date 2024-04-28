@@ -16,6 +16,7 @@
 
 package dev.nafusoft.magictransportchest.command
 
+import dev.nafusoft.magictransportchest.MagicTransportChest
 import dev.nafusoft.magictransportchest.database.SettingsStore
 import dev.nafusoft.magictransportchest.entities.MagicStorage
 import dev.nafusoft.magictransportchest.service.StorageService
@@ -48,12 +49,19 @@ class CreateStorageCommand(val storageService: StorageService, val settingsStore
                 storageName,
                 sender.uniqueId.toString(),
                 MagicStorage.StorageType.VIRTUAL,
-                storageSize
+                storageSize,
+                if (settingsStore.getSetting("mtc.storage.enable_write_limit")
+                        ?.toBoolean() == true
+                ) MagicTransportChest.instance!!.pluginConfig.serverUniqueId else null
             )
 
             sender.sendMessage("${ChatColor.GREEN}${ChatColor.BOLD}[MagicTransportChest] Storage created.")
         }
 
         return true
+    }
+
+    override fun getPermission(): String {
+        return "mtc.storage.create"
     }
 }

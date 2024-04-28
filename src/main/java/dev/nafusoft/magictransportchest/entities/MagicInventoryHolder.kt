@@ -17,19 +17,21 @@
 package dev.nafusoft.magictransportchest.entities
 
 import dev.nafusoft.magictransportchest.service.StorageService
+import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-class MagicInventoryHolder(val storageService: StorageService, val storageId: String) : InventoryHolder {
+class MagicInventoryHolder(val storageService: StorageService, val storage: MagicStorage, val player: Player) :
+    InventoryHolder {
 
     override fun getInventory(): Inventory {
-        storageService.getInventory(storageId)?.let {
+        storageService.getInventory(storage.id)?.let {
             return it.toMinecraftInventory(this)
         }
-        return storageService.newInventory(storageId).toMinecraftInventory(this)
+        return storageService.newInventory(storage.id).toMinecraftInventory(this)
     }
 
     fun saveInventory(inventory: Inventory) {
-        storageService.setInventory(MagicInventory.fromMinecraftInventory(storageId, inventory))
+        storageService.setInventory(MagicInventory.fromMinecraftInventory(storage.id, inventory))
     }
 }

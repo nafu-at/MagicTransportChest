@@ -29,6 +29,7 @@ data class MagicItemStack(val itemStack: Map<String, Any>, val nbt: String?) : C
         serializedMap["nbt"] as String?
     )
 
+    // TODO 2024-04-29 いずれNMSに依存しない実装をやる
     fun toMinecraftItemStack(): ItemStack {
         ItemStack.deserialize(itemStack).let {
             if (nbt != null) {
@@ -44,9 +45,9 @@ data class MagicItemStack(val itemStack: Map<String, Any>, val nbt: String?) : C
 
     override fun serialize(): MutableMap<String, Any> {
         val map = mutableMapOf<String, Any>()
-        map.put("itemStack", itemStack)
+        map["itemStack"] = itemStack
         if (nbt != null) {
-            map.put("nbt", nbt)
+            map["nbt"] = nbt
         }
         return map
     }

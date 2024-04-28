@@ -21,9 +21,7 @@ import org.bukkit.command.CommandSender
 
 class SettingsCommand(private val settingsStore: SettingsStore) : MagicSubCommand {
     override fun onCommand(sender: CommandSender, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("mtc.command.settings")) {
-            sender.sendMessage("${ChatColor.RED}${ChatColor.BOLD}[MagicTransportChest] You don't have permission to use this command.")
-        } else if (args.isEmpty()) {
+        if (args.isEmpty()) {
             // Send current settings
             settingsStore.getSettings().forEach {
                 sender.sendMessage("${ChatColor.GOLD}${ChatColor.BOLD}${it.key}: ${ChatColor.AQUA}${ChatColor.BOLD}${it.value}")
@@ -61,5 +59,9 @@ class SettingsCommand(private val settingsStore: SettingsStore) : MagicSubComman
         }
 
         return true
+    }
+
+    override fun getPermission(): String {
+        return "mtc.command.settings"
     }
 }

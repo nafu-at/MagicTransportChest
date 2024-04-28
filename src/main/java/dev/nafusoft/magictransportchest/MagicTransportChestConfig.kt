@@ -17,10 +17,13 @@
 package dev.nafusoft.magictransportchest
 
 import com.zaxxer.hikari.HikariConfig
+import java.util.*
 
 data class MagicTransportChestConfig(
     val database: DatabaseConfig,
-    val redis: RedisConfig
+    val redis: RedisConfig,
+    val storage: StorageConfig,
+    val serverUniqueId: String
 ) {
     class ConfigLoader(private val instance: MagicTransportChest) {
         private val config = instance.config
@@ -31,6 +34,14 @@ data class MagicTransportChestConfig(
 
             val databaseConfig = config.getConfigurationSection("database")
             val redisConfig = config.getConfigurationSection("redis")
+            val storageConfig = config.getConfigurationSection("storage")
+
+            var serverUniqueId = config.getString("serverUniqueId")
+            if (serverUniqueId.isNullOrBlank()) { // Generate server unique id
+                serverUniqueId = UUID.randomUUID().toString()
+                config.set("serverUniqueId", serverUniqueId)
+                instance.saveConfig()
+            }
 
             return MagicTransportChestConfig(
                 DatabaseConfig(
@@ -43,7 +54,11 @@ data class MagicTransportChestConfig(
                     redisConfig!!.getString("host")!!,
                     redisConfig.getInt("port"),
                     redisConfig.getInt("database")
-                )
+                ),
+                StorageConfig(
+                    storageConfig!!.getBoolean("createDefault"),
+                ),
+                serverUniqueId
             )
         }
     }
@@ -74,4 +89,8 @@ data class RedisConfig(
     val host: String,
     val port: Int,
     val database: Int,
+)
+
+data class StorageConfig(
+    val createDefault: Boolean,
 )

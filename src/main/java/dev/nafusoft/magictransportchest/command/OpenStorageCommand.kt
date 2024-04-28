@@ -41,7 +41,7 @@ class OpenStorageCommand(val storageService: StorageService, val settingsStore: 
                             sender.sendMessage("${ChatColor.RED}${ChatColor.BOLD}[MagicTransportChest] Storage not found.")
                             return true
                         }
-                        sender.openInventory(MagicInventoryHolder(storageService, storageId).inventory)
+                        sender.openInventory(MagicInventoryHolder(storageService, it, sender).inventory)
                     }
                 }
 

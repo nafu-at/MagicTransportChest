@@ -24,7 +24,7 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
     init {
         try {
             super.createTable(
-                "storage_id VARCHAR(36) NOT NULL, storage_name VARCHAR(128) NOT NULL, storage_owner VARCHAR(36) NOT NULL, storage_type ENUM('block', 'virtual') NOT NULL DEFAULT 'virtual', storage_size INT NOT NULL DEFAULT 27, PRIMARY KEY (storage_id)"
+                "storage_id VARCHAR(36) NOT NULL, storage_name VARCHAR(128) NOT NULL, storage_owner VARCHAR(36) NOT NULL, storage_type ENUM('block', 'virtual') NOT NULL DEFAULT 'virtual', storage_size INT NOT NULL DEFAULT 27, write_limit VARCHAR(36) NULL, PRIMARY KEY (storage_id)"
             )
         } catch (e: Exception) {
             MagicTransportChest.instance!!.logger.severe("Failed to create table $tablename")
@@ -45,7 +45,8 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
                             rs.getString("storage_name"),
                             rs.getString("storage_owner"),
                             MagicStorage.StorageType.valueOf(rs.getString("storage_type").uppercase()),
-                            rs.getInt("storage_size")
+                            rs.getInt("storage_size"),
+                            rs.getString("write_limit")
                         )
                     } else {
                         null
@@ -71,7 +72,8 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
                                 rs.getString("storage_name"),
                                 rs.getString("storage_owner"),
                                 MagicStorage.StorageType.valueOf(rs.getString("storage_type").uppercase()),
-                                rs.getInt("storage_size")
+                                rs.getInt("storage_size"),
+                                rs.getString("write_limit")
                             )
                         )
                     }
@@ -96,7 +98,8 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
                                 rs.getString("storage_name"),
                                 rs.getString("storage_owner"),
                                 MagicStorage.StorageType.valueOf(rs.getString("storage_type").uppercase()),
-                                rs.getInt("storage_size")
+                                rs.getInt("storage_size"),
+                                rs.getString("write_limit")
                             )
                         )
                     }
@@ -110,14 +113,15 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
     fun registerStorage(storage: MagicStorage) {
         connector.connection.use { connection ->
             connection.prepareStatement(
-                "INSERT INTO $tablename (storage_id, storage_name, storage_owner, storage_type, storage_size) SELECT ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT * FROM $tablename WHERE storage_id = ?)"
+                "INSERT INTO $tablename (storage_id, storage_name, storage_owner, storage_type, storage_size, write_limit) SELECT ?, ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT * FROM $tablename WHERE storage_id = ?)"
             ).use { ps ->
                 ps.setString(1, storage.id)
                 ps.setString(2, storage.name)
                 ps.setString(3, storage.owner)
                 ps.setString(4, storage.type.name)
                 ps.setInt(5, storage.size)
-                ps.setString(6, storage.id)
+                ps.setString(6, storage.writeLimit)
+                ps.setString(7, storage.id)
                 ps.execute()
             }
         }
@@ -127,13 +131,14 @@ class StorageStore(connector: DatabaseConnector) : DatabaseTable("storage", conn
     fun updateStorage(storage: MagicStorage) {
         connector.connection.use { connection ->
             connection.prepareStatement(
-                "UPDATE $tablename SET storage_name = ?, storage_owner = ?, storage_type = ?, storage_size = ? WHERE storage_id = ?"
+                "UPDATE $tablename SET storage_name = ?, storage_owner = ?, storage_type = ?, storage_size = ?, write_limit = ? WHERE storage_id = ?"
             ).use { ps ->
                 ps.setString(1, storage.name)
                 ps.setString(2, storage.owner)
                 ps.setString(3, storage.type.name)
                 ps.setInt(4, storage.size)
-                ps.setString(5, storage.id)
+                ps.setString(5, storage.writeLimit)
+                ps.setString(6, storage.id)
                 ps.execute()
             }
         }

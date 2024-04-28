@@ -37,6 +37,9 @@ class ItemFilterSettingCommand(private val settingsStore: SettingsStore) : Magic
         return true
     }
 
+    override fun getPermission(): String {
+        return "mtc.command.item_filter"
+    }
 
     class MagicItemFilterSettingGuiHolder(private val settingsStore: SettingsStore) : InventoryHolder {
 

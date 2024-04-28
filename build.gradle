@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'dev.nafusoft'
-version = '0.0.1'
+version = '0.1.0'
 
 shadowJar {
     archiveFileName.set("MagicTransportChest." + archiveExtension.get())

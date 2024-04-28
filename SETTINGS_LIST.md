@@ -28,7 +28,7 @@ These settings are stored in a database and shared among all connected servers.
 - **Type**: Boolean
 - **Default**: `true`
 
-### `mtc.storage.enable_item_filter
+### `mtc.storage.enable_item_filter`
 
 - **Description**: Enable or disable the item filter.
 - **Type**: Boolean
@@ -48,4 +48,10 @@ These settings are stored in a database and shared among all connected servers.
 - **Type**: Yaml List
 - **Default**: `[]`
 - **Notice**: This setting is saved in a special format, so a dedicated configuration UI is provided. Please do not
-  manually change this setting as it may corrupt the data. 
+  manually change this setting as it may corrupt the data.
+
+### `mtc.storage.enable_write_limit`
+
+- **Description**: Enabling write restriction allows writing only on the server where the storage was created.
+- **Type**: Boolean
+- **Default**: `false`
