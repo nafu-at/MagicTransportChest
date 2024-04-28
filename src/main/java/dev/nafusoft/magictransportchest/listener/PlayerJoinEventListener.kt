@@ -23,6 +23,7 @@ import dev.nafusoft.magictransportchest.entities.MagicStorage
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import java.util.*
 
 class PlayerJoinEventListener(val settingsStore: SettingsStore, val storageStore: StorageStore) : Listener {
 
@@ -30,12 +31,13 @@ class PlayerJoinEventListener(val settingsStore: SettingsStore, val storageStore
     fun onPlayerJoinEvent(event: PlayerJoinEvent) {
         val writeLimit = settingsStore.getSetting("mtc.storage.enable_write_limit")?.toBoolean() ?: false
         val storages = storageStore.getStorages(event.player.uniqueId.toString())
+        val uniqueId = UUID.randomUUID().toString()
 
         if (storages.isEmpty()) {
             storageStore.registerStorage(
                 MagicStorage(
-                    event.player.uniqueId.toString(),
-                    null,
+                    uniqueId,
+                    uniqueId,
                     event.player.uniqueId.toString(),
                     MagicStorage.StorageType.BLOCK,
                     settingsStore.getSetting("mtc.storage.size")?.toInt() ?: 27,
@@ -45,8 +47,8 @@ class PlayerJoinEventListener(val settingsStore: SettingsStore, val storageStore
         } else if (writeLimit && storages.none { it.writeLimit.equals(MagicTransportChest.instance!!.pluginConfig.serverUniqueId) }) {
             storageStore.registerStorage(
                 MagicStorage(
-                    event.player.uniqueId.toString(),
-                    null,
+                    uniqueId,
+                    uniqueId,
                     event.player.uniqueId.toString(),
                     MagicStorage.StorageType.BLOCK,
                     settingsStore.getSetting("mtc.storage.size")?.toInt() ?: 27,
