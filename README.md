@@ -5,8 +5,8 @@ The Spigot plugin can provide players with storage for sharing items between mul
 ## Features
 
 - [x] Share items between multiple servers.
+- [x] Filter items that can be stored in the Magic Transport Chest.
 - [ ] Assign a Magic Transport Chest to a physical chest.
-- [ ] Filter items that can be stored in the Magic Transport Chest.
 
 ## Operation requirements
 
