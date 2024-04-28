@@ -39,7 +39,7 @@ data class MagicTransportChestConfig(
             var serverUniqueId = config.getString("serverUniqueId")
             if (serverUniqueId.isNullOrBlank()) { // Generate server unique id
                 serverUniqueId = UUID.randomUUID().toString()
-                config.set("serverUniqueId", serverUniqueId)
+                MagicTransportChest.instance!!.config.set("serverUniqueId", serverUniqueId)
                 instance.saveConfig()
             }
 

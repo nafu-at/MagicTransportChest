@@ -34,7 +34,7 @@ class InventoryOpenEventListener(private val jedis: Jedis) : Listener {
         if (holder is MagicInventoryHolder) {
             // Check if the chest is already opened by another server
             if (jedis.exists("open:${holder.storage.id}")) {
-                event.player.sendMessage("${ChatColor.RED}${ChatColor.BOLD}This chest is already opened by another player. Please wait a moment.")
+                event.player.sendMessage("${ChatColor.RED}${ChatColor.BOLD}This storage is already opened by another server. Please wait a moment.")
                 event.isCancelled = true
             }
             jedis["open:${holder.storage.id}"] = System.currentTimeMillis().toString()

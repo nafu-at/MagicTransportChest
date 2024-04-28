@@ -28,14 +28,13 @@ class ItemFilterChecker {
             settingsStore?.let { ItemFilterSettingCommand.MagicItemFilterSettingGuiHolder(it) }
 
         fun check(itemStack: ItemStack): Boolean {
-            if (settingsStore?.getSetting("mtc.storage.enable_item_filter")?.toBoolean() != true) return true
+            if (settingsStore!!.getSetting("mtc.storage.enable_item_filter")?.toBoolean() != true) return true
 
             val blacklist =
                 (settingsStore.getSetting("mtc.storage.filter_type")?.uppercase() ?: "WHITELIST") == "BLACKLIST"
-            magicItemFilterSettingGuiHolder?.inventory?.contents?.find { it.isSimilar(itemStack) }?.let {
-                return !blacklist
-            }
-            return blacklist
+            if (magicItemFilterSettingGuiHolder?.inventory?.contents?.find { it != null && it.isSimilar(itemStack) } != null)
+                return blacklist
+            return !blacklist
         }
     }
 }

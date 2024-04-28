@@ -49,7 +49,7 @@ class MagicTransportChest : JavaPlugin() {
 
     override fun onDisable() {
         // Plugin shutdown logic
-        if (connector != null) connector!!.close() // Close database connection
+        shutdown()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
@@ -111,6 +111,7 @@ class MagicTransportChest : JavaPlugin() {
         jedis.select(pluginConfig.redis.database)
 
         getCommand("magictransportchest")?.setExecutor(this)
+        subCommands["clean"] = CleanSubCommand(jedis)
         subCommands["settings"] = SettingsCommand(settingsStore!!)
         subCommands["filter"] = ItemFilterSettingCommand(settingsStore!!)
         subCommands["create"] = CreateStorageCommand(storageService, settingsStore!!)
@@ -118,7 +119,7 @@ class MagicTransportChest : JavaPlugin() {
         subCommands["open"] = OpenStorageCommand(storageService, settingsStore!!)
         server.pluginManager.registerEvents(InventoryOpenEventListener(jedis), this)
         server.pluginManager.registerEvents(InventoryCloseEventListener(jedis), this)
-        server.pluginManager.registerEvents(InventoryDragEventListener(), this)
+        server.pluginManager.registerEvents(InventoryClickEventListener(), this)
         server.pluginManager.registerEvents(InventoryMoveItemEventListener(), this)
         if (pluginConfig.storage.createDefault)
             server.pluginManager.registerEvents(PlayerJoinEventListener(settingsStore!!, storageStore!!), this)
